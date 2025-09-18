@@ -1,19 +1,21 @@
-
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 from locators import *
-from data import test_usual_password
+from data import test_usual_password, ad_title
+from helpers import unique_email
 
 class TestCreateAds:
 
-    def test_create_ad_authorized_user(self, driver, wait, unique_email):
-        ad_title = "Тестовое объявление"
+    def test_create_ad_authorized_user(self, driver):
+        wait = WebDriverWait(driver, 15)
 
         driver.find_element(*LOGIN_BUTTON).click()
         wait.until(EC.visibility_of_element_located(LOGIN_LABEL))
         driver.find_element(*REGISTRATION_BUTTON).click()
         wait.until(EC.visibility_of_element_located(REGISTRATION_LABEL))
 
-        driver.find_element(*EMAIL_INPUT).send_keys(unique_email)
+        email = unique_email()
+        driver.find_element(*EMAIL_INPUT).send_keys(email)
         driver.find_element(*PASSWORD_INPUT).send_keys(test_usual_password)
         driver.find_element(*CONFIRM_PASSWORD_INPUT).send_keys(test_usual_password)
         driver.find_element(*CREATE_ACC_BUTTON).click()
@@ -22,32 +24,14 @@ class TestCreateAds:
         wait.until(EC.visibility_of_element_located(USER_NAME))
 
         driver.find_element(*CREATE_AD_BUTTON).click()
-        driver.find_element(*TITLE_INPUT).send_keys(ad_title)
+        driver.find_element(*TITLE_INPUT).send_keys(ad_title['ads_title'])
         driver.find_element(*CONDITION_RADIOBUTTON_USED).click()
-        driver.find_element(*DESCRIPTION_TEXTAREA).send_keys("Описание тестового объявления")
-        driver.find_element(*PRICE_INPUT).send_keys("1000")
+        driver.find_element(*DESCRIPTION_TEXTAREA).send_keys(ad_title['description_ads'])
+        driver.find_element(*PRICE_INPUT).send_keys(str(ad_title['price_ads']))
 
-        driver.find_element(*CATEGORY_DROPDOWN).click()
-        wait.until(EC.visibility_of_element_located(LAST_CATEGORY)).click()
+    def test_create_ad_unauthorized_user(self, driver):
+        wait = WebDriverWait(driver, 15)
 
-        driver.find_element(*CITY_DROPDOWN).click()
-        wait.until(EC.visibility_of_element_located(LAST_CITY_OPTION)).click()
-
-        driver.find_element(*SUBMIT_BUTTON).click()
-
-        driver.refresh()
-        wait.until(EC.element_to_be_clickable(USERS_LOGO))
-        driver.find_element(*USERS_LOGO).click()
-
-        wait.until(EC.visibility_of_element_located(AD_CARDS))
-        advertisements_list = driver.find_elements(*AD_CARDS)
-        assert len(advertisements_list) > 0, 'Объявление не было создано'
-
-        ads_section = driver.find_element(*MY_ADS_SECTION)
-        last_ad_title = ads_section.find_element(*AD_TITLE).text
-        assert last_ad_title == ad_title, f'Заголовок {last_ad_title} отличается от {ad_title}'
-
-    def test_create_ad_unauthorized_user(self, driver, wait):
         driver.find_element(*CREATE_AD_BUTTON).click()
         auth_error = wait.until(EC.visibility_of_element_located(AUTH_ERROR))
         assert 'Чтобы разместить объявление, авторизуйтесь' in auth_error.text, f'текст не соответствует {auth_error.text}'

@@ -19,7 +19,7 @@ DESCRIPTION_TEXTAREA = (By.XPATH, "//textarea[@placeholder='Описание т�
 PRICE_INPUT = (By.NAME, "price")
 CATEGORY_DROPDOWN = (By.CSS_SELECTOR, "input[name='category'] + button")
 CATEGORY_OPTIONS = ((By.XPATH, "//div[@class='dropDownMenu_options__CmHmm']/button"))
-LAST_CATEGORY = (By.XPATH, "(//div[@class='dropDownMenu_options__CmHmm']/button)[last()]")
+LAST_CATEGORY = (By.XPATH, "(//div[contains(@class,'dropDownMenu_options')]/button)[last()]")
 CITY_DROPDOWN = (By.CSS_SELECTOR, "input[name='city'] + button")
 CITY_OPTIONS = (By.XPATH, "//div[@data-test='city-select-menu']//button")
 LAST_CITY_OPTION = (By.XPATH, "(//div[@class='dropDownMenu_options__CmHmm']/button)[last()]")

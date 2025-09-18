@@ -1,9 +1,13 @@
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from locators import *
 from data import existing_user_data
 
+
 class TestLogin:
-    def test_user_login(self, driver, wait):
+    def test_user_login(self, driver):
+        wait = WebDriverWait(driver, 10)
+
         driver.find_element(*LOGIN_BUTTON).click()
         wait.until(EC.visibility_of_element_located(LOGIN_LABEL))
 

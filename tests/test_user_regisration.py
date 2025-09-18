@@ -1,17 +1,23 @@
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from locators import *
-from data import existing_user_data, test_usual_password
+from data import test_usual_password, existing_user_data
+from helpers import unique_email
+
 
 class TestRegistration:
 
-    def test_new_user_registration_valid_email_format(self, driver, wait, unique_email):
-        driver.find_element(*LOGIN_BUTTON).click()
+    def test_new_user_registration_valid_email_format(self, driver):
+        wait = WebDriverWait(driver, 10)
 
+        driver.find_element(*LOGIN_BUTTON).click()
         wait.until(EC.visibility_of_element_located(LOGIN_LABEL))
 
         driver.find_element(*REGISTRATION_BUTTON).click()
         wait.until(EC.visibility_of_element_located(EMAIL_INPUT))
-        driver.find_element(*EMAIL_INPUT).send_keys(unique_email)
+
+        email = unique_email()
+        driver.find_element(*EMAIL_INPUT).send_keys(email)
         driver.find_element(*PASSWORD_INPUT).send_keys(test_usual_password)
         driver.find_element(*CONFIRM_PASSWORD_INPUT).send_keys(test_usual_password)
         driver.find_element(*CREATE_ACC_BUTTON).click()
@@ -23,7 +29,9 @@ class TestRegistration:
         assert user_name.is_displayed(), 'Имя пользователя не отображается'
         assert "User" in user_name.text, 'Имя пользователя не содержит "User"'
 
-    def test_new_user_registration_unsupported_email_format(self, driver, wait):
+    def test_new_user_registration_unsupported_email_format(self, driver):
+        wait = WebDriverWait(driver, 10)
+
         driver.find_element(*LOGIN_BUTTON).click()
         wait.until(EC.visibility_of_element_located(LOGIN_LABEL))
 
@@ -38,7 +46,8 @@ class TestRegistration:
         assert email_error.is_displayed(), 'Ошибка не появилась'
         assert email_error.text == "Ошибка", 'Текст ошибки не соответствует'
 
-    def test_registration_already_registered_user(self, driver, wait):
+    def test_registration_already_registered_user(self, driver):
+        wait = WebDriverWait(driver, 10)
 
         driver.find_element(*LOGIN_BUTTON).click()
         wait.until(EC.visibility_of_element_located(LOGIN_LABEL))

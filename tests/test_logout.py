@@ -1,10 +1,14 @@
-
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 from locators import *
 from data import existing_user_data, test_usual_password
+from helpers import unique_email
+
 
 class TestLogOut:
-    def test_user_logout_existing_user(self, driver, wait):
+    def test_user_logout_existing_user(self, driver):
+        wait = WebDriverWait(driver, 10)
+
         wait.until(EC.element_to_be_clickable(LOGIN_BUTTON)).click()
         wait.until(EC.visibility_of_element_located(LOGIN_LABEL))
         wait.until(EC.visibility_of_element_located(EMAIL_INPUT)).send_keys(existing_user_data['exist_email'])
@@ -26,14 +30,17 @@ class TestLogOut:
         assert len(avatar_elements) == 0, 'Аватар пользователя отображается'
         assert len(user_name_elements) == 0, 'Имя пользователя отображается'
 
-    def test_user_logout_new_user(self, driver, wait, unique_email):
+    def test_user_logout_new_user(self, driver):
+        wait = WebDriverWait(driver, 10)
+
         wait.until(EC.element_to_be_clickable(LOGIN_BUTTON)).click()
         wait.until(EC.visibility_of_element_located(LOGIN_LABEL))
 
         wait.until(EC.element_to_be_clickable(REGISTRATION_BUTTON)).click()
         wait.until(EC.visibility_of_element_located(REGISTRATION_LABEL))
 
-        wait.until(EC.visibility_of_element_located(EMAIL_INPUT)).send_keys(unique_email)
+        email = unique_email()
+        wait.until(EC.visibility_of_element_located(EMAIL_INPUT)).send_keys(email)
         driver.find_element(*PASSWORD_INPUT).send_keys(test_usual_password)
         driver.find_element(*CONFIRM_PASSWORD_INPUT).send_keys(test_usual_password)
         driver.find_element(*CREATE_ACC_BUTTON).click()
