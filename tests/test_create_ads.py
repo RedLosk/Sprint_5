@@ -14,8 +14,7 @@ class TestCreateAds:
         driver.find_element(*REGISTRATION_BUTTON).click()
         wait.until(EC.visibility_of_element_located(REGISTRATION_LABEL))
 
-        email = unique_email()
-        driver.find_element(*EMAIL_INPUT).send_keys(email)
+        driver.find_element(*EMAIL_INPUT).send_keys(unique_email())
         driver.find_element(*PASSWORD_INPUT).send_keys(test_usual_password)
         driver.find_element(*CONFIRM_PASSWORD_INPUT).send_keys(test_usual_password)
         driver.find_element(*CREATE_ACC_BUTTON).click()
@@ -28,6 +27,26 @@ class TestCreateAds:
         driver.find_element(*CONDITION_RADIOBUTTON_USED).click()
         driver.find_element(*DESCRIPTION_TEXTAREA).send_keys(ad_title['description_ads'])
         driver.find_element(*PRICE_INPUT).send_keys(str(ad_title['price_ads']))
+
+        driver.find_element(*CATEGORY_DROPDOWN).click()
+        wait.until(EC.visibility_of_element_located(LAST_CATEGORY)).click()
+
+        driver.find_element(*CITY_DROPDOWN).click()
+        wait.until(EC.visibility_of_element_located(LAST_CITY_OPTION)).click()
+
+        driver.find_element(*SUBMIT_BUTTON).click()
+
+        driver.refresh()
+        wait.until(EC.element_to_be_clickable(USERS_LOGO))
+        driver.find_element(*USERS_LOGO).click()
+
+        wait.until(EC.visibility_of_element_located(AD_CARDS))
+        advertisements_list = driver.find_elements(*AD_CARDS)
+        assert len(advertisements_list) > 0, 'Объявление не было создано'
+
+        ads_section = driver.find_element(*MY_ADS_SECTION)
+        last_ad_title = ads_section.find_element(*AD_TITLE).text
+        assert last_ad_title == ad_title, f'Заголовок {last_ad_title} отличается от {ad_title}'
 
     def test_create_ad_unauthorized_user(self, driver):
         wait = WebDriverWait(driver, 15)
